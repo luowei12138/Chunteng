@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bdqn.mapper.ScheduleDao">
+
+    <resultMap type="cn.bdqn.model.Schedule" id="ScheduleMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="departmentId" column="department_id" jdbcType="INTEGER"/>
+        <result property="roomId" column="room_id" jdbcType="INTEGER"/>
+        <result property="sign" column="sign" jdbcType="INTEGER"/>
+        <result property="quantity" column="quantity" jdbcType="INTEGER"/>
+        <result property="remainingQuantity" column="remaining_quantity" jdbcType="INTEGER"/>
+        <result property="inquiryTime" column="inquiry_time" jdbcType="VARCHAR"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+        <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
+        <result property="doctorName" column="doctor_name"/>
+        <result property="roomName" column="room_name"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ScheduleMap">
+        select
+          id, user_id, department_id, room_id, sign, quantity, remaining_quantity, inquiry_time, created_time, updated_time
+        from chunteng.schedule
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ScheduleMap">
+        select
+          id, user_id, department_id, room_id, sign, quantity, remaining_quantity, inquiry_time, created_time, updated_time
+        from chunteng.schedule
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ScheduleMap">
+        select
+        id, user_id, department_id, room_id, sign, quantity, remaining_quantity, inquiry_time, created_time,
+        updated_time
+        from chunteng.schedule
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="departmentId != null">
+                and department_id = #{departmentId}
+            </if>
+            <if test="roomId != null">
+                and room_id = #{roomId}
+            </if>
+            <if test="sign != null">
+                and sign = #{sign}
+            </if>
+            <if test="quantity != null">
+                and quantity = #{quantity}
+            </if>
+            <if test="remainingQuantity != null">
+                and remaining_quantity = #{remainingQuantity}
+            </if>
+            <if test="inquiryTime != null">
+                and inquiry_time = #{inquiryTime}
+            </if>
+            <if test="createdTime != null">
+                and created_time = #{createdTime}
+            </if>
+            <if test="updatedTime != null">
+                and updated_time = #{updatedTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="getDoctorList"  resultMap="ScheduleMap">
+        SELECT s.id,
+               user_id,
+               s.department_id,
+               room_id,
+               sign,
+               quantity,
+               remaining_quantity,
+               s.inquiry_time,
+               s.created_time,
+               s.updated_time,
+               r.`name`    AS room_name,
+               u.user_name AS doctor_name
+        FROM `schedule` AS s
+                 INNER JOIN room AS r ON r.id = s.room_id
+                 INNER JOIN sys_users AS u ON u.id = s.user_id
+        WHERE s.department_id = #{departmentId}
+          AND s.sign = #{sign}
+          AND DATE_FORMAT(s.inquiry_time, '%Y-%m-%d') = DATE_FORMAT(#{inquiryTime}, '%Y-%m-%d')
+    </select>
+
+    <select id="queryByMap" resultMap="ScheduleMap">
+        SELECT
+            *
+        FROM
+            `schedule`
+        WHERE
+            department_id = #{departmentId}
+          AND sign =  #{sign}
+          AND user_id =  #{userId}
+          AND room_id = #{roomId}
+          AND DATE_FORMAT( `inquiry_time`, '%Y-%m-%d' ) = DATE_FORMAT(
+                #{date},
+                '%Y-%m-%d')
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.schedule(user_id, department_id, room_id, sign, quantity, remaining_quantity, inquiry_time, created_time, updated_time)
+        values (#{userId}, #{departmentId}, #{roomId}, #{sign}, #{quantity}, #{remainingQuantity}, #{inquiryTime}, #{createdTime}, #{updatedTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.schedule(user_id, department_id, room_id, sign, quantity, remaining_quantity, inquiry_time,
+        created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.userId}, #{model.departmentId}, #{model.roomId}, #{model.sign}, #{model.quantity},
+            #{model.remainingQuantity}, #{model.inquiryTime}, #{model.createdTime}, #{model.updatedTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.schedule(user_id, department_id, room_id, sign, quantity, remaining_quantity, inquiry_time,
+        created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.userId}, #{model.departmentId}, #{model.roomId}, #{model.sign}, #{model.quantity},
+            #{model.remainingQuantity}, #{model.inquiryTime}, #{model.createdTime}, #{model.updatedTime})
+        </foreach>
+        on duplicate key update
+        user_id = values(user_id) , department_id = values(department_id) , room_id = values(room_id) , sign =
+        values(sign) , quantity = values(quantity) , remaining_quantity = values(remaining_quantity) , inquiry_time =
+        values(inquiry_time) , created_time = values(created_time) , updated_time = values(updated_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update chunteng.schedule
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="departmentId != null">
+                department_id = #{departmentId},
+            </if>
+            <if test="roomId != null">
+                room_id = #{roomId},
+            </if>
+            <if test="sign != null">
+                sign = #{sign},
+            </if>
+            <if test="quantity != null">
+                quantity = #{quantity},
+            </if>
+            <if test="remainingQuantity != null">
+                remaining_quantity = #{remainingQuantity},
+            </if>
+            <if test="inquiryTime != null">
+                inquiry_time = #{inquiryTime},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime},
+            </if>
+            <if test="updatedTime != null">
+                updated_time = #{updatedTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from chunteng.schedule where id = #{id}
+    </delete>
+
+</mapper>
+

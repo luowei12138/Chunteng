@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bdqn.mapper.SysMenusDao">
+
+    <resultMap type="cn.bdqn.model.SysMenus" id="SysMenusMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="menuName" column="menu_name" jdbcType="VARCHAR"/>
+        <result property="menuUrl" column="menu_url" jdbcType="VARCHAR"/>
+        <result property="menuType" column="menu_type" jdbcType="INTEGER"/>
+        <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+        <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--加载菜单-->
+    <resultMap id="sysMenusMapAndSub" type="cn.bdqn.model.SysMenus">
+        <result property="id" column="parent_id" jdbcType="INTEGER"/>
+        <result property="menuName" column="parent_name" jdbcType="VARCHAR"/>
+        <result property="menuType" column="parent_type" jdbcType="VARCHAR"/>
+
+        <collection property="subMenus" ofType="cn.bdqn.model.SysMenus">
+            <id property="id" column="sub_id"/>
+            <result property="subMenuName" column="sub_name" jdbcType="VARCHAR"/>
+            <result property="subMenuUrl" column="sub_url"/>
+            <result property="menuType" column="parent_type" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="SysMenusMap">
+        select
+          id, menu_name, menu_url, menu_type, parent_id, created_time, updated_time
+        from chunteng.sys_menus
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="SysMenusMap">
+        select
+          id, menu_name, menu_url, menu_type, parent_id, created_time, updated_time
+        from chunteng.sys_menus
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="SysMenusMap">
+        select
+        id, menu_name, menu_url, menu_type, parent_id, created_time, updated_time
+        from chunteng.sys_menus
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="menuName != null and menuName != ''">
+                and menu_name = #{menuName}
+            </if>
+            <if test="menuUrl != null and menuUrl != ''">
+                and menu_url = #{menuUrl}
+            </if>
+            <if test="menuType != null">
+                and menu_type = #{menuType}
+            </if>
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+            <if test="createdTime != null">
+                and created_time = #{createdTime}
+            </if>
+            <if test="updatedTime != null">
+                and updated_time = #{updatedTime}
+            </if>
+        </where>
+    </select>
+
+    <!--加载菜单-->
+    <select id="getMenuList" resultMap="sysMenusMapAndSub">
+        SELECT
+            m1.id AS parent_id,
+            m1.menu_name AS parent_name,
+            m1.menu_type AS parent_type,
+            m2.id AS sub_id,
+            m2.menu_name AS sub_name,
+            m2.menu_url AS sub_url,
+            m2.menu_type AS sub_type
+        FROM
+            sys_menus AS m1
+                INNER JOIN sys_menus AS m2 ON m1.id = m2.parent_id
+                INNER JOIN sys_roles_menus AS rm ON rm.menu_id = m1.id
+                INNER JOIN sys_roles AS r1 ON r1.id = rm.role_id
+        WHERE
+            r1.is_lock = 1
+          AND rm.role_id = #{rolesId};
+    </select>
+
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.sys_menus(menu_name, menu_url, menu_type, parent_id, created_time, updated_time)
+        values (#{menuName}, #{menuUrl}, #{menuType}, #{parentId}, #{createdTime}, #{updatedTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.sys_menus(menu_name, menu_url, menu_type, parent_id, created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.menuName}, #{model.menuUrl}, #{model.menuType}, #{model.parentId}, #{model.createdTime},
+            #{model.updatedTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.sys_menus(menu_name, menu_url, menu_type, parent_id, created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.menuName}, #{model.menuUrl}, #{model.menuType}, #{model.parentId}, #{model.createdTime},
+            #{model.updatedTime})
+        </foreach>
+        on duplicate key update
+        menu_name = values(menu_name) , menu_url = values(menu_url) , menu_type = values(menu_type) , parent_id =
+        values(parent_id) , created_time = values(created_time) , updated_time = values(updated_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update chunteng.sys_menus
+        <set>
+            <if test="menuName != null and menuName != ''">
+                menu_name = #{menuName},
+            </if>
+            <if test="menuUrl != null and menuUrl != ''">
+                menu_url = #{menuUrl},
+            </if>
+            <if test="menuType != null">
+                menu_type = #{menuType},
+            </if>
+            <if test="parentId != null">
+                parent_id = #{parentId},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime},
+            </if>
+            <if test="updatedTime != null">
+                updated_time = #{updatedTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from chunteng.sys_menus where id = #{id}
+    </delete>
+
+
+
+
+</mapper>
+

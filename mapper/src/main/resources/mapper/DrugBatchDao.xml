@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bdqn.mapper.DrugBatchDao">
+
+    <resultMap type="cn.bdqn.model.DrugBatch" id="DrugBatchMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="drugId" column="drug_id" jdbcType="INTEGER"/>
+        <result property="stock" column="stock" jdbcType="INTEGER"/>
+        <result property="residueStock" column="residue_stock" jdbcType="INTEGER"/>
+        <result property="productionDate" column="production_date" jdbcType="VARCHAR"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+        <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="DrugBatchMap">
+        select
+          id, drug_id, stock, residue_stock, production_date, created_time, updated_time
+        from chunteng.drug_batch
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="DrugBatchMap">
+        select
+          id, drug_id, stock, residue_stock, production_date, created_time, updated_time
+        from chunteng.drug_batch
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="DrugBatchMap">
+        select
+        id, drug_id, stock, residue_stock, production_date, created_time, updated_time
+        from chunteng.drug_batch
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="drugId != null">
+                and drug_id = #{drugId}
+            </if>
+            <if test="stock != null">
+                and stock = #{stock}
+            </if>
+            <if test="residueStock != null">
+                and residue_stock = #{residueStock}
+            </if>
+            <if test="productionDate != null">
+                and production_date = #{productionDate}
+            </if>
+            <if test="createdTime != null">
+                and created_time = #{createdTime}
+            </if>
+            <if test="updatedTime != null">
+                and updated_time = #{updatedTime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.drug_batch(drug_id, stock, residue_stock, production_date, created_time, updated_time)
+        values (#{drugId}, #{stock}, #{residueStock}, #{productionDate}, #{createdTime}, #{updatedTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.drug_batch(drug_id, stock, residue_stock, production_date, created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.drugId}, #{model.stock}, #{model.residueStock}, #{model.productionDate}, #{model.createdTime},
+            #{model.updatedTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.drug_batch(drug_id, stock, residue_stock, production_date, created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.drugId}, #{model.stock}, #{model.residueStock}, #{model.productionDate}, #{model.createdTime},
+            #{model.updatedTime})
+        </foreach>
+        on duplicate key update
+        drug_id = values(drug_id) , stock = values(stock) , residue_stock = values(residue_stock) , production_date =
+        values(production_date) , created_time = values(created_time) , updated_time = values(updated_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update chunteng.drug_batch
+        <set>
+            <if test="drugId != null">
+                drug_id = #{drugId},
+            </if>
+            <if test="stock != null">
+                stock = #{stock},
+            </if>
+            <if test="residueStock != null">
+                residue_stock = #{residueStock},
+            </if>
+            <if test="productionDate != null">
+                production_date = #{productionDate},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime},
+            </if>
+            <if test="updatedTime != null">
+                updated_time = #{updatedTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from chunteng.drug_batch where id = #{id}
+    </delete>
+
+</mapper>
+

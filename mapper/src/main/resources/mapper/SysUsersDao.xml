@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bdqn.mapper.SysUsersDao">
+
+    <resultMap type="cn.bdqn.model.SysUsers" id="SysUsersMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="departmentId" column="department_id" jdbcType="INTEGER"/>
+        <result property="userType" column="user_type" jdbcType="INTEGER"/>
+        <!--关联用户类型，名称-->
+        <result property="userTypeName" column="role_name" jdbcType="VARCHAR"/>
+        <result property="headUrl" column="head_url" jdbcType="VARCHAR"/>
+        <result property="account" column="account" jdbcType="VARCHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="salt" column="salt" jdbcType="VARCHAR"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+        <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
+        <result property="createdUserId" column="created_user_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="SysUsersMap">
+        select
+          id, department_id, user_type, head_url, account, user_name, password, salt, created_time, updated_time, created_user_id
+        from chunteng.sys_users
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="SysUsersMap">
+        select
+          id, department_id, user_type, head_url, account, user_name, password, salt, created_time, updated_time, created_user_id
+        from chunteng.sys_users
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="SysUsersMap">
+        select
+        id, department_id, user_type, head_url, account, user_name, password, salt, created_time, updated_time,
+        created_user_id
+        from chunteng.sys_users
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="departmentId != null">
+                and department_id = #{departmentId}
+            </if>
+            <if test="userType != null">
+                and user_type = #{userType}
+            </if>
+            <if test="headUrl != null and headUrl != ''">
+                and head_url = #{headUrl}
+            </if>
+            <if test="account != null and account != ''">
+                and account = #{account}
+            </if>
+            <if test="userName != null and userName != ''">
+                and user_name = #{userName}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="salt != null and salt != ''">
+                and salt = #{salt}
+            </if>
+            <if test="createdTime != null">
+                and created_time = #{createdTime}
+            </if>
+            <if test="updatedTime != null">
+                and updated_time = #{updatedTime}
+            </if>
+            <if test="createdUserId != null">
+                and created_user_id = #{createdUserId}
+            </if>
+        </where>
+    </select>
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.sys_users(department_id, user_type, head_url, account, user_name, password, salt, created_time, updated_time, created_user_id)
+        values (#{departmentId}, #{userType}, #{headUrl}, #{account}, #{userName}, #{password}, #{salt}, #{createdTime}, #{updatedTime}, #{createdUserId})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.sys_users(department_id, user_type, head_url, account, user_name, password, salt,
+        created_time, updated_time, created_user_id)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.departmentId}, #{model.userType}, #{model.headUrl}, #{model.account}, #{model.userName},
+            #{model.password}, #{model.salt}, #{model.createdTime}, #{model.updatedTime}, #{model.createdUserId})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.sys_users(department_id, user_type, head_url, account, user_name, password, salt,
+        created_time, updated_time, created_user_id)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.departmentId}, #{model.userType}, #{model.headUrl}, #{model.account}, #{model.userName},
+            #{model.password}, #{model.salt}, #{model.createdTime}, #{model.updatedTime}, #{model.createdUserId})
+        </foreach>
+        on duplicate key update
+        department_id = values(department_id) , user_type = values(user_type) , head_url = values(head_url) , account =
+        values(account) , user_name = values(user_name) , password = values(password) , salt = values(salt) ,
+        created_time = values(created_time) , updated_time = values(updated_time) , created_user_id =
+        values(created_user_id)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update chunteng.sys_users
+        <set>
+            <if test="departmentId != null">
+                department_id = #{departmentId},
+            </if>
+            <if test="userType != null">
+                user_type = #{userType},
+            </if>
+            <if test="headUrl != null and headUrl != ''">
+                head_url = #{headUrl},
+            </if>
+            <if test="account != null and account != ''">
+                account = #{account},
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="salt != null and salt != ''">
+                salt = #{salt},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime},
+            </if>
+            <if test="updatedTime != null">
+                updated_time = #{updatedTime},
+            </if>
+            <if test="createdUserId != null">
+                created_user_id = #{createdUserId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from chunteng.sys_users where id = #{id}
+    </delete>
+
+    <!-- 登录方法 -->
+    <select id="dologin" resultMap="SysUsersMap">
+        SELECT u.*,r.`role_name`
+        FROM `sys_users` u
+	    INNER JOIN `sys_roles` r ON (u.`user_type` = r.`id`)
+	    WHERE  account = #{account};
+    </select>
+
+    <!--查询用户列表-->
+    <select id="getUsersList" resultMap="SysUsersMap">
+        SELECT u.*,r.`role_name`
+        FROM `sys_users` u
+        INNER JOIN `sys_roles` r ON (u.`user_type` = r.`id`)
+    </select>
+
+    <select id="getDoctorList" resultMap="SysUsersMap">
+        select
+        t1.id as id,
+        t1.department_id,
+        t1.user_type,
+        t1.head_url,
+        t1.account as account,
+        t1.user_name
+        from sys_users as t1
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="departmentId != null">
+                and t1.department_id = #{departmentId}
+            </if>
+            and t1.user_type = 3
+        </trim>
+
+    </select>
+
+</mapper>
+

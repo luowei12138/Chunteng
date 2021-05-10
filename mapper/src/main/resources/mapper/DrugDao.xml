@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bdqn.mapper.DrugDao">
+
+    <resultMap type="cn.bdqn.model.Drug" id="DrugMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="company" column="company" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="NUMERIC"/>
+        <result property="image" column="image" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="productionDate" column="production_date" jdbcType="VARCHAR"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+        <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="DrugMap">
+        select
+          id, name, company, price, image, type, production_date, created_time, updated_time
+        from chunteng.drug
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="DrugMap">
+        select
+          id, name, company, price, image, type, production_date, created_time, updated_time
+        from chunteng.drug
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="DrugMap">
+        select
+        id, name, company, price, image, type, production_date, created_time, updated_time
+        from chunteng.drug
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="company != null and company != ''">
+                and company = #{company}
+            </if>
+            <if test="price != null">
+                and price = #{price}
+            </if>
+            <if test="image != null and image != ''">
+                and image = #{image}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="productionDate != null">
+                and production_date = #{productionDate}
+            </if>
+            <if test="createdTime != null">
+                and created_time = #{createdTime}
+            </if>
+            <if test="updatedTime != null">
+                and updated_time = #{updatedTime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.drug(name, company, price, image, type, production_date, created_time, updated_time)
+        values (#{name}, #{company}, #{price}, #{image}, #{type}, #{productionDate}, #{createdTime}, #{updatedTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.drug(name, company, price, image, type, production_date, created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.name}, #{model.company}, #{model.price}, #{model.image}, #{model.type},
+            #{model.productionDate}, #{model.createdTime}, #{model.updatedTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.drug(name, company, price, image, type, production_date, created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.name}, #{model.company}, #{model.price}, #{model.image}, #{model.type},
+            #{model.productionDate}, #{model.createdTime}, #{model.updatedTime})
+        </foreach>
+        on duplicate key update
+        name = values(name) , company = values(company) , price = values(price) , image = values(image) , type =
+        values(type) , production_date = values(production_date) , created_time = values(created_time) , updated_time =
+        values(updated_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update chunteng.drug
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="company != null and company != ''">
+                company = #{company},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="image != null and image != ''">
+                image = #{image},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="productionDate != null">
+                production_date = #{productionDate},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime},
+            </if>
+            <if test="updatedTime != null">
+                updated_time = #{updatedTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from chunteng.drug where id = #{id}
+    </delete>
+
+</mapper>
+

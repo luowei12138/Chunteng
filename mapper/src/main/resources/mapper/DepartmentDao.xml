@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bdqn.mapper.DepartmentDao">
+
+    <resultMap type="cn.bdqn.model.Department" id="DepartmentMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+        <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="DepartmentMap">
+        select
+          id, name, created_time, updated_time
+        from chunteng.department
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="DepartmentMap">
+        select
+          id, name, created_time, updated_time
+        from chunteng.department
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="DepartmentMap">
+        select
+        id, name, created_time, updated_time
+        from chunteng.department
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="createdTime != null">
+                and created_time = #{createdTime}
+            </if>
+            <if test="updatedTime != null">
+                and updated_time = #{updatedTime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.department(name, created_time, updated_time)
+        values (#{name}, #{createdTime}, #{updatedTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.department(name, created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.name}, #{model.createdTime}, #{model.updatedTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.department(name, created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.name}, #{model.createdTime}, #{model.updatedTime})
+        </foreach>
+        on duplicate key update
+        name = values(name) , created_time = values(created_time) , updated_time = values(updated_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update chunteng.department
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime},
+            </if>
+            <if test="updatedTime != null">
+                updated_time = #{updatedTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from chunteng.department where id = #{id}
+    </delete>
+
+    <!--查询所有就诊科室表-->
+    <select id="getAlldepartment" resultMap="DepartmentMap">
+        select
+            id,
+            name
+        from
+            department
+    </select>
+
+</mapper>
+

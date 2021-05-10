@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bdqn.mapper.ChargeRecordsDao">
+
+    <resultMap type="cn.bdqn.model.ChargeRecords" id="ChargeRecordsMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="targetId" column="target_id" jdbcType="INTEGER"/>
+        <result property="patientId" column="patient_id" jdbcType="INTEGER"/>
+        <result property="targetType" column="target_type" jdbcType="INTEGER"/>
+        <result property="paymentMethod" column="payment_method" jdbcType="INTEGER"/>
+        <result property="money" column="money" jdbcType="NUMERIC"/>
+        <result property="payMoney" column="pay_money" jdbcType="NUMERIC"/>
+        <result property="medicareMoney" column="medicare_money" jdbcType="NUMERIC"/>
+        <result property="payTime" column="pay_time" jdbcType="TIMESTAMP"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+        <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ChargeRecordsMap">
+        select
+          id, target_id, patient_id, target_type, payment_method, money, pay_money, medicare_money, pay_time, created_time, updated_time
+        from chunteng.charge_records
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ChargeRecordsMap">
+        select
+          id, target_id, patient_id, target_type, payment_method, money, pay_money, medicare_money, pay_time, created_time, updated_time
+        from chunteng.charge_records
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ChargeRecordsMap">
+        select
+        id, target_id, patient_id, target_type, payment_method, money, pay_money, medicare_money, pay_time,
+        created_time, updated_time
+        from chunteng.charge_records
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="targetId != null">
+                and target_id = #{targetId}
+            </if>
+            <if test="patientId != null">
+                and patient_id = #{patientId}
+            </if>
+            <if test="targetType != null">
+                and target_type = #{targetType}
+            </if>
+            <if test="paymentMethod != null">
+                and payment_method = #{paymentMethod}
+            </if>
+            <if test="money != null">
+                and money = #{money}
+            </if>
+            <if test="payMoney != null">
+                and pay_money = #{payMoney}
+            </if>
+            <if test="medicareMoney != null">
+                and medicare_money = #{medicareMoney}
+            </if>
+            <if test="payTime != null">
+                and pay_time = #{payTime}
+            </if>
+            <if test="createdTime != null">
+                and created_time = #{createdTime}
+            </if>
+            <if test="updatedTime != null">
+                and updated_time = #{updatedTime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.charge_records(target_id, patient_id, target_type, payment_method, money, pay_money, medicare_money, pay_time, created_time, updated_time)
+        values (#{targetId}, #{patientId}, #{targetType}, #{paymentMethod}, #{money}, #{payMoney}, #{medicareMoney}, #{payTime}, #{createdTime}, #{updatedTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.charge_records(target_id, patient_id, target_type, payment_method, money, pay_money,
+        medicare_money, pay_time, created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.targetId}, #{model.patientId}, #{model.targetType}, #{model.paymentMethod}, #{model.money},
+            #{model.payMoney}, #{model.medicareMoney}, #{model.payTime}, #{model.createdTime},
+            #{model.updatedTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.charge_records(target_id, patient_id, target_type, payment_method, money, pay_money,
+        medicare_money, pay_time, created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.targetId}, #{model.patientId}, #{model.targetType}, #{model.paymentMethod}, #{model.money},
+            #{model.payMoney}, #{model.medicareMoney}, #{model.payTime}, #{model.createdTime},
+            #{model.updatedTime})
+        </foreach>
+        on duplicate key update
+        target_id = values(target_id) , patient_id = values(patient_id) , target_type = values(target_type) ,
+        payment_method = values(payment_method) , money = values(money) , pay_money = values(pay_money) , medicare_money
+        = values(medicare_money) , pay_time = values(pay_time) , created_time = values(created_time) , updated_time =
+        values(updated_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update chunteng.charge_records
+        <set>
+            <if test="targetId != null">
+                target_id = #{targetId},
+            </if>
+            <if test="patientId != null">
+                patient_id = #{patientId},
+            </if>
+            <if test="targetType != null">
+                target_type = #{targetType},
+            </if>
+            <if test="paymentMethod != null">
+                payment_method = #{paymentMethod},
+            </if>
+            <if test="money != null">
+                money = #{money},
+            </if>
+            <if test="payMoney != null">
+                pay_money = #{payMoney},
+            </if>
+            <if test="medicareMoney != null">
+                medicare_money = #{medicareMoney},
+            </if>
+            <if test="payTime != null">
+                pay_time = #{payTime},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime},
+            </if>
+            <if test="updatedTime != null">
+                updated_time = #{updatedTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from chunteng.charge_records where id = #{id}
+    </delete>
+
+</mapper>
+

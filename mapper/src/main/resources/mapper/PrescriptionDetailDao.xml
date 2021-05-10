@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bdqn.mapper.PrescriptionDetailDao">
+
+    <resultMap type="cn.bdqn.model.PrescriptionDetail" id="PrescriptionDetailMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="prescriptionId" column="prescription_id" jdbcType="INTEGER"/>
+        <result property="registryId" column="registry_id" jdbcType="INTEGER"/>
+        <result property="drugId" column="drug_id" jdbcType="INTEGER"/>
+        <result property="patientId" column="patient_id" jdbcType="INTEGER"/>
+        <result property="amount" column="amount" jdbcType="INTEGER"/>
+        <result property="isMedicare" column="is_medicare" jdbcType="INTEGER"/>
+        <result property="price" column="price" jdbcType="NUMERIC"/>
+        <result property="payPrice" column="pay_price" jdbcType="NUMERIC"/>
+        <result property="medicarePrice" column="medicare_price" jdbcType="NUMERIC"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+        <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="PrescriptionDetailMap">
+        select
+          id, prescription_id, registry_id, drug_id, patient_id, amount, is_medicare, price, pay_price, medicare_price, created_time, updated_time
+        from chunteng.prescription_detail
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="PrescriptionDetailMap">
+        select
+          id, prescription_id, registry_id, drug_id, patient_id, amount, is_medicare, price, pay_price, medicare_price, created_time, updated_time
+        from chunteng.prescription_detail
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="PrescriptionDetailMap">
+        select
+        id, prescription_id, registry_id, drug_id, patient_id, amount, is_medicare, price, pay_price, medicare_price,
+        created_time, updated_time
+        from chunteng.prescription_detail
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="prescriptionId != null">
+                and prescription_id = #{prescriptionId}
+            </if>
+            <if test="registryId != null">
+                and registry_id = #{registryId}
+            </if>
+            <if test="drugId != null">
+                and drug_id = #{drugId}
+            </if>
+            <if test="patientId != null">
+                and patient_id = #{patientId}
+            </if>
+            <if test="amount != null">
+                and amount = #{amount}
+            </if>
+            <if test="isMedicare != null">
+                and is_medicare = #{isMedicare}
+            </if>
+            <if test="price != null">
+                and price = #{price}
+            </if>
+            <if test="payPrice != null">
+                and pay_price = #{payPrice}
+            </if>
+            <if test="medicarePrice != null">
+                and medicare_price = #{medicarePrice}
+            </if>
+            <if test="createdTime != null">
+                and created_time = #{createdTime}
+            </if>
+            <if test="updatedTime != null">
+                and updated_time = #{updatedTime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.prescription_detail(prescription_id, registry_id, drug_id, patient_id, amount, is_medicare, price, pay_price, medicare_price, created_time, updated_time)
+        values (#{prescriptionId}, #{registryId}, #{drugId}, #{patientId}, #{amount}, #{isMedicare}, #{price}, #{payPrice}, #{medicarePrice}, #{createdTime}, #{updatedTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.prescription_detail(prescription_id, registry_id, drug_id, patient_id, amount, is_medicare,
+        price, pay_price, medicare_price, created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.prescriptionId}, #{model.registryId}, #{model.drugId}, #{model.patientId}, #{model.amount},
+            #{model.isMedicare}, #{model.price}, #{model.payPrice}, #{model.medicarePrice}, #{model.createdTime},
+            #{model.updatedTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.prescription_detail(prescription_id, registry_id, drug_id, patient_id, amount, is_medicare,
+        price, pay_price, medicare_price, created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.prescriptionId}, #{model.registryId}, #{model.drugId}, #{model.patientId}, #{model.amount},
+            #{model.isMedicare}, #{model.price}, #{model.payPrice}, #{model.medicarePrice}, #{model.createdTime},
+            #{model.updatedTime})
+        </foreach>
+        on duplicate key update
+        prescription_id = values(prescription_id) , registry_id = values(registry_id) , drug_id = values(drug_id) ,
+        patient_id = values(patient_id) , amount = values(amount) , is_medicare = values(is_medicare) , price =
+        values(price) , pay_price = values(pay_price) , medicare_price = values(medicare_price) , created_time =
+        values(created_time) , updated_time = values(updated_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update chunteng.prescription_detail
+        <set>
+            <if test="prescriptionId != null">
+                prescription_id = #{prescriptionId},
+            </if>
+            <if test="registryId != null">
+                registry_id = #{registryId},
+            </if>
+            <if test="drugId != null">
+                drug_id = #{drugId},
+            </if>
+            <if test="patientId != null">
+                patient_id = #{patientId},
+            </if>
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+            <if test="isMedicare != null">
+                is_medicare = #{isMedicare},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="payPrice != null">
+                pay_price = #{payPrice},
+            </if>
+            <if test="medicarePrice != null">
+                medicare_price = #{medicarePrice},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime},
+            </if>
+            <if test="updatedTime != null">
+                updated_time = #{updatedTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from chunteng.prescription_detail where id = #{id}
+    </delete>
+
+</mapper>
+

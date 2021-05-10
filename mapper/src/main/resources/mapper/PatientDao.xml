@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bdqn.mapper.PatientDao">
+
+    <resultMap type="cn.bdqn.model.Patient" id="PatientMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="birthday" column="birthday" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="INTEGER"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="idCard" column="id_card" jdbcType="VARCHAR"/>
+        <result property="isMedicare" column="is_medicare" jdbcType="INTEGER"/>
+        <result property="idMedicare" column="id_medicare" jdbcType="VARCHAR"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+        <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="PatientMap">
+        select
+          id, name, birthday, sex, address, phone, id_card, is_medicare, id_medicare, created_time, updated_time
+        from chunteng.patient
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="PatientMap">
+        select
+          id, name, birthday, sex, address, phone, id_card, is_medicare, id_medicare, created_time, updated_time
+        from chunteng.patient
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="PatientMap">
+        select
+        id, name, birthday, sex, address, phone, id_card, is_medicare, id_medicare, created_time, updated_time
+        from chunteng.patient
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="birthday != null">
+                and birthday = #{birthday}
+            </if>
+            <if test="sex != null">
+                and sex = #{sex}
+            </if>
+            <if test="address != null and address != ''">
+                and address = #{address}
+            </if>
+            <if test="phone != null and phone != ''">
+                and phone = #{phone}
+            </if>
+            <if test="idCard != null and idCard != ''">
+                and id_card = #{idCard}
+            </if>
+            <if test="isMedicare != null">
+                and is_medicare = #{isMedicare}
+            </if>
+            <if test="idMedicare != null and idMedicare != ''">
+                and id_medicare = #{idMedicare}
+            </if>
+            <if test="createdTime != null">
+                and created_time = #{createdTime}
+            </if>
+            <if test="updatedTime != null">
+                and updated_time = #{updatedTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="isNotIdMedicare" resultMap="PatientMap">
+        select id,
+               name,
+               birthday,
+               sex,
+               address,
+               phone,
+               id_card,
+               is_medicare,
+               id_medicare,
+               created_time,
+               updated_time
+        from patient
+        where id_medicare = #{idMedicare}
+    </select>
+
+    <select id="isNotIdCare" resultType="cn.bdqn.model.Patient">
+        select id,
+               name,
+               birthday,
+               sex,
+               address,
+               phone,
+               id_card,
+               is_medicare,
+               id_medicare,
+               created_time,
+               updated_time
+        from patient
+        where id_card = #{idCard}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.patient(name, birthday, sex, address, phone, id_card, is_medicare, id_medicare, created_time, updated_time)
+        values (#{name}, #{birthday}, #{sex}, #{address}, #{phone}, #{idCard}, #{isMedicare}, #{idMedicare}, #{createdTime}, #{updatedTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.patient(name, birthday, sex, address, phone, id_card, is_medicare, id_medicare,
+        created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.name}, #{model.birthday}, #{model.sex}, #{model.address}, #{model.phone}, #{model.idCard},
+            #{model.isMedicare}, #{model.idMedicare}, #{model.createdTime}, #{model.updatedTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into chunteng.patient(name, birthday, sex, address, phone, id_card, is_medicare, id_medicare,
+        created_time, updated_time)
+        values
+        <foreach collection="entities" item="model" separator=",">
+            (#{model.name}, #{model.birthday}, #{model.sex}, #{model.address}, #{model.phone}, #{model.idCard},
+            #{model.isMedicare}, #{model.idMedicare}, #{model.createdTime}, #{model.updatedTime})
+        </foreach>
+        on duplicate key update
+        name = values(name) , birthday = values(birthday) , sex = values(sex) , address = values(address) , phone =
+        values(phone) , id_card = values(id_card) , is_medicare = values(is_medicare) , id_medicare =
+        values(id_medicare) , created_time = values(created_time) , updated_time = values(updated_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update chunteng.patient
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="birthday != null">
+                birthday = #{birthday},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="idCard != null and idCard != ''">
+                id_card = #{idCard},
+            </if>
+            <if test="isMedicare != null">
+                is_medicare = #{isMedicare},
+            </if>
+            <if test="idMedicare != null and idMedicare != ''">
+                id_medicare = #{idMedicare},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime},
+            </if>
+            <if test="updatedTime != null">
+                updated_time = #{updatedTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from chunteng.patient where id = #{id}
+    </delete>
+
+</mapper>
+
